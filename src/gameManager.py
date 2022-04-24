@@ -1,3 +1,4 @@
+from .outputs import WordleError
 from .gameStates import State
 from .game import WordleGame 
 from .renderer import Renderer
@@ -12,12 +13,16 @@ class Wordle:
         self.renderer = Renderer()
     
     def start(self):
+        print("Welcome to command line wordle!")
+        print("correct letters and placings are wrapped with *: [ * a * ]")
+        print("correct letters but incorrect placings are wrapped with ~: [ ~ a ~ ]")
+        print()
         # loop games and await game states
         while not self.isEnd():
             guess = input("Guess a 5 letter word >>  ")
             res = self.game.process(guess)
-            # print(f"Guess: {guess} >> ", res)
-            self.update()
+            if not isinstance(res, WordleError):
+                self.update()
 
             if self.isEnd():
                 self.end()
@@ -35,11 +40,13 @@ class Wordle:
     def update(self):
         self.setState()
         self.renderer.render(self.game.responses)
+        print("Tries remaining: ", self.game.triesRemaining)
 
     def isEnd(self):
         return self.state in [State.COMPLETED, State.WIN]
 
     def end(self):
+        print("\n")
         if self.state == State.WIN:
             print("Congratulations you have guessed the right word!")
         print(f"The game has ended in {WordleGame.MAX_TRIES - self.game.triesRemaining} tries.")

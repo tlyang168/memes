@@ -37,15 +37,13 @@ class WordleGame:
             self.isWin = True
 
         # 1. check if letter is in guess
-        guessLetters = Counter(guess)
         trueLetters = Counter(self.answer)
-        coloredLetters = set(guessLetters.keys()).intersection(trueLetters.keys())
-
+        
         # 2. check if letter is in correct position
-        seen = dict([(k, 0) for k in coloredLetters])
+        seen = dict([(k, 0) for k in trueLetters])
         encoding = [ValueStates.REGULAR] * 5
         for (i, letter) in enumerate(guess):
-            if letter in coloredLetters:
+            if letter in trueLetters:
                 if self.answer[i] == letter:
                     encoding[i] = ValueStates.GREEN
                     seen[letter] += 1
@@ -62,6 +60,7 @@ class WordleGame:
         isValid, error = self.validate(guess)
         if not isValid:
             # don't decrement remaining tries and error
+            print(error)
             return error
         response = self.getDiffResponse(guess)
         self.responses.append(response)
